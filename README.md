@@ -1,5 +1,5 @@
-# HorribleSubs-AdRu
-Automated Downloader and Rclone Uploader for HorribleSubs RSS Feed.
+# SubsPlease-AdRu
+Automated Downloader and Rclone Uploader for SubsPlease RSS Feed.
 By default the script downloads from the 1080p feed and uploads to the rclone remote ```drive:```. The feed resolution can be altered by changing aria2c URL on line 10. The rclone destination remote can be altered by changing the rclone command on lines 34 and 42.
 
 ### Setup
