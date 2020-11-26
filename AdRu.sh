@@ -25,6 +25,10 @@ else
 	aria2c -V --seed-time=0 -i rss.txt
 	mv rss.txt .rss.old
 fi
+if [ -n "$(ls -- \[SubsPlease\]\ */ 2> /dev/null)" ]; then
+	mv ./\[SubsPlease\]\ */* .
+	rmdir ./\[SubsPlease\]\ */
+fi
 if [ -n "$(ls -- \[SubsPlease\]\ *.mkv 2> /dev/null)" ]; then
 	for i in \[SubsPlease\]\ *.mkv; do
 		dir="${i:13}"
