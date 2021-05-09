@@ -13,8 +13,8 @@ sed -i 's/<link>/\n&/g;s/\&amp\;/\&/g' .rss.txt
 sed -n -i 's:.*<link>\(.*\)</link>.*:\1:p' .rss.txt
 sed -i -e "/https\:\/\/subsplease\.org/d;\$a\\" .rss.txt
 if [ -f ./.rss.old ]; then
-	if [ -n "$(diff -q .rss.txt .rss.old)" ]; then
-		grep -Fxv -f .rss.old .rss.txt > rss.txt
+	if [ -n "$(diff -q .rss.old .rss.txt)" ]; then
+		diff ./.rss.old ./.rss.txt | grep \> | sed 's/^..//' > rss.txt
 		aria2c -V --seed-time=0 -i rss.txt
 		mv .rss.txt .rss.old && rm rss.txt
 	else
