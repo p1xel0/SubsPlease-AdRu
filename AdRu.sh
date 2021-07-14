@@ -29,7 +29,7 @@ fi
 if [ -n "$(ls -- \[SubsPlease\]\ */ 2> /dev/null)" ]; then
 	for i in \[SubsPlease\]\ */; do
 		dir="$(anititle "$i")"
-		rclone copy "$i" drive:/HorribleSubs/"$dir"/ && rm "$i"
+		rclone copy "$i" drive:/HorribleSubs/"$dir"/ && rm -r "$i"
 	done
 fi
 if [ -n "$(ls -- \[SubsPlease\]\ *.mkv 2> /dev/null)" ]; then
