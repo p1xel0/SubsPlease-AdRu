@@ -27,12 +27,14 @@ else
 	mv rss.txt .rss.old
 fi
 if [ -n "$(ls -- \[SubsPlease\]\ */ 2> /dev/null)" ]; then
-	mv ./\[SubsPlease\]\ */* .
-	rmdir ./\[SubsPlease\]\ */
+	for i in \[SubsPlease\]\ */; do
+		dir="$(anititle "$i")"
+		rclone copy "$i" drive:/HorribleSubs/"$dir"/ && rm "$i"
+	done
 fi
 if [ -n "$(ls -- \[SubsPlease\]\ *.mkv 2> /dev/null)" ]; then
 	for i in \[SubsPlease\]\ *.mkv; do
 		dir="$(anititle "$i")"
-		rclone copy "$i" drive:/HorribleSubs/"$dir"/ && rm "$i"
+		rclone copy "$i" drive:/HorribleSubs/"$dir"/ && rm "$i"	
 	done
 fi
