@@ -28,6 +28,7 @@ fi
 if [ -n "$(ls -- \[SubsPlease\]\ */ 2> /dev/null)" ]; then
 	for i in \[SubsPlease\]\ */; do
 		dir="$(anititle "$i")"
+		rclone delete drive:/HorribleSubs/"$dir"/
 		rclone copy "$i" drive:/HorribleSubs/"$dir"/ && rm -r "$i"
 	done
 fi
