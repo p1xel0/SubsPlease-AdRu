@@ -28,7 +28,20 @@ fi
 if [ -n "$(ls -- \[SubsPlease\]\ */ 2> /dev/null)" ]; then
 	for i in \[SubsPlease\]\ */; do
 		dir="$(anititle "$i")"
-		rclone delete drive:/HorribleSubs/"$dir"/ &> /dev/null
+		if [ -n "$(rclone lsf drive:/HorribleSubs/"$dir")" ]; then
+			mapfile -t local_files < <(find "$i" -type f -exec basename {} \; | sort)
+			mapfile -t same_files < <(for ((i=0;i<"${#local_files[@]}";i++)); do if [ -n "$(rclone lsf drive:/HorribleSubs/"$dir"/"${local_files[$i]}" 2> /dev/null)" ]; then echo "${local_files[$i]}"; fi; done)
+			if [ ! "${#same_files[@]}" -eq 0 ]; then
+				mapfile -t rclone_files < <(rclone lsf drive:/HorribleSubs/"$dir"/)
+				mapfile -t old_files < <(comm -23 <(IFS=$'\n'; echo "${rclone_files[*]}" | sort) <(IFS=$'\n'; echo "${same_files[*]}" | sort) )
+				for f in "${same_files[@]}"; do
+					rm "$i"/"$f"	
+				done
+				for o in "${old_files[@]}"; do
+					rclone deletefile drive:/HorribleSubs/"$dir"/"$o"
+				done
+			fi	
+		fi
 		rclone copy "$i" drive:/HorribleSubs/"$dir"/ && rm -r "$i"
 	done
 fi
