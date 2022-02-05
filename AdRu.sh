@@ -30,18 +30,23 @@ if [ -n "$(ls -- \[SubsPlease\]\ */ 2> /dev/null)" ]; then
 		dir="$(anititle "$i")"
 		if [ -n "$(rclone lsf drive:/HorribleSubs/"$dir")" ]; then
 			mapfile -t local_files < <(find "$i" -type f -exec basename {} \; | sort)
-			mapfile -t same_files < <(for ((i=0;i<"${#local_files[@]}";i++)); do if [ -n "$(rclone lsf drive:/HorribleSubs/"$dir"/"${local_files[$i]}" 2> /dev/null)" ]; then echo "${local_files[$i]}"; fi; done)
+			mapfile -t same_files < <(for ((s=0;s<"${#local_files[@]}";s++)); do if [ -n "$(rclone lsf drive:/HorribleSubs/"$dir"/"${local_files[$s]}" 2> /dev/null)" ]; then echo "${local_files[$s]}"; fi; done)
+			mapfile -t rclone_files < <(rclone lsf drive:/HorribleSubs/"$dir"/)
 			if [ ! "${#same_files[@]}" -eq 0 ]; then
-				mapfile -t rclone_files < <(rclone lsf drive:/HorribleSubs/"$dir"/)
-				mapfile -t old_files < <(comm -23 <(IFS=$'\n'; echo "${rclone_files[*]}" | sort) <(IFS=$'\n'; echo "${same_files[*]}" | sort) )
 				for f in "${same_files[@]}"; do
 					rm "$i"/"$f"	
 				done
-				for o in "${old_files[@]}"; do
-					rclone deletefile drive:/HorribleSubs/"$dir"/"$o"
-				done
-			fi	
-		fi
+			fi
+			if ! find "$i" -maxdepth 1 -type f | read; then
+				rmdir "$i"
+				continue
+			fi
+			mapfile -t new_files < <(find "$i" -type f -exec basename {} \; | sort | sed 's/v[2-9] .*//;s/\[/\\[/g')
+			mapfile -t old_files < <(for ((o=0;o<"${#rclone_files[@]}";o++)); do echo "${rclone_files[$o]}" | grep -o ^"${new_files[$o]}"\ .*$; done)
+			for o in "${old_files[@]}"; do
+				rclone deletefile drive:/HorribleSubs/"$dir"/"$o"
+			done
+		fi	
 		rclone copy "$i" drive:/HorribleSubs/"$dir"/ && rm -r "$i"
 	done
 fi
